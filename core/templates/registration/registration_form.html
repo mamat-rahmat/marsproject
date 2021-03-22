@@ -1,0 +1,36 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+{% load bulma_tags %}
+
+{% block title %}{% trans "Register for an account" %}{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="box">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ form|bulma }}
+                    <div class="field">
+                        <button type="submit" class="button is-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+
+{% comment %}
+**registration/registration_form.html**
+Used to show the form users will fill out to register. By default, has
+the following context:
+
+``form``
+The registration form. This will be an instance of some subclass
+of ``django.forms.Form``; consult `Django's forms documentation
+<http: //docs.djangoproject.com/en/dev/topics/forms />`_ for
+information on how to display this in a template.
+{% endcomment %}

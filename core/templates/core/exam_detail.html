@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bulma_tags %}
+{% load mathfilters %}
+{% load coretags %}
+
+{% block title %} Exam Problem {% endblock title %}
+
+{% block content %}
+<section class="container">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <nav class="panel">
+        <a class="panel-block" href="{% url 'topic-list' program.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-comments" aria-hidden="true"></i>
+          </span>
+          Forum
+        </a>        
+        {% for currexam in program.exam_set.all %}
+        <a class="panel-block {% ifequal currexam.id exam.id %}is-active{% endifequal %}" href="{% url 'exam-detail' program.id currexam.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-book" aria-hidden="true"></i>
+          </span>
+          {{currexam.name}}
+        </a>
+        {% endfor %}
+      </nav>
+    </div>
+    <div class="column">
+      <div class="box">
+        <h1 class="title">{{exam.name}}</h1>
+        <table class="table is-bordered">
+          <tr>
+            <td>Waktu Mulai </td>
+            <td>{{exam.start_time|date:"d F Y, H:i"}}</td>
+          </tr>
+          <tr>
+            <td>Waktu Selesai</td>
+            <td>{{exam.end_time|date:"d F Y, H:i"}}</td>
+          </tr>
+        </table>
+        <hr>
+        <div class="tabs is-boxed" id="tabs">
+          <ul>
+            <li {% if not saved %}class="is-active"{% endif %} data-tab="1">
+              <a>
+                <span class="icon is-small"><i class="far fa-file"></i></span>
+                <span>Problem</span>
+              </a>
+            </li>
+            <li data-tab="2">
+              <a>
+                <span class="icon is-small"><i class="far fa-file-alt"></i></span>
+                <span>Solution</span>
+              </a>
+            </li>
+            <li {% if saved %}class="is-active"{% endif %} data-tab="3">
+              <a>
+                <span class="icon is-small"><i class="far fa-paper-plane"></i></span>
+                <span>Answer</span>
+              </a>
+            </li>
+            <li data-tab="4">
+              <a>
+                <span class="icon is-small"><i class="fas fa-trophy"></i></span>
+                <span>Result</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div id="tab-content">
+          <div class="tab-content-item {% if saved %}is-hidden{% endif %} has-text-centered" data-content="1" style="position: relative;">
+            {% if exam.is_started %}
+              {% if program.download_file %}
+              <a href="{{request.META.HTTP_HOST}}{{exam.problemset.problem_file.url}}" class="button is-primary">Download file</a>
+              {% endif %}
+            <iframe src="https://docs.google.com/gview?url={{request.META.HTTP_HOST}}{{exam.problemset.problem_file.url}}&embedded=true" style="width:100%; height:700px;" frameborder="0"></iframe>
+            {% if not program.download_file %}
+            <div style="width: 90px; height: 90px; position: absolute; opacity: 0; right: 0px; top: 0px;">&nbsp;</div>
+            {% endif %}
+            {% else %}
+            Soal belum tersedia
+            {% endif %}
+          </div>
+          <div class="tab-content-item is-hidden has-text-centered" data-content="2" style="position: relative;">
+            {% if exam.is_ended %}
+              {% if program.download_file %}
+              <a href="{{request.META.HTTP_HOST}}{{exam.problemset.solution_file.url}}" class="button is-primary">Download file</a>
+              {% endif %}
+            <iframe src="https://docs.google.com/gview?url={{request.META.HTTP_HOST}}{{exam.problemset.solution_file.url}}&embedded=true" style="width:100%; height:700px;" frameborder="0"></iframe>
+            {% if not program.download_file %}
+            <div style="width: 90px; height: 90px; position: absolute; opacity: 0; right: 0px; top: 0px;">&nbsp;</div>
+            {% endif %}
+            {% else %}
+            Solusi belum tersedia
+            {% endif %}
+          </div>
+          <div class="tab-content-item {% if not saved %}is-hidden{% endif %} has-text-centered" data-content="3">
+            
+            {% if exam.is_started %}
+              {% if saved %}
+                <div class="notification is-success">
+                  Jawaban berhasil diperbaharui
+                </div>
+              {% endif %}
+              {% if exam.is_ended %}
+                <div class="notification is-danger">
+                  Pengumpulan jawaban ditutup
+                </div>
+              {% else %}
+              <p id="timer" style="margin-bottom: 3rem;">
+                <span id="days"></span>
+                <span id="hours"></span>
+                <span id="minutes"></span>
+                <span id="seconds"></span>
+              </p>
+              {% endif %}
+              <form method="post" action="">
+                {% csrf_token %}
+                <table class="table">
+                  {% for ci in '0123456789'|make_list %}
+                    {% with i=forloop.counter %}       
+                    <tr>
+                      {% for cj in '01234'|make_list %}
+                        {% with j=forloop.counter %}
+                        {% with k=j|sub:1|mul:10|add:i %}
+                        
+                        {% if k <= exam.problemset.mcq_total %}
+                        <td>
+                          <div class="field is-horizontal" 
+                            {% if exam.is_ended %}
+                              {% if answer|get:k == anskey|get:k %}
+                                style="border: 3px solid green"
+                              {% else %}
+                                style="border: 3px solid red"
+                              {% endif %}
+                            {% endif %}
+                          >
+                            <div class="field-label is-small">
+                              <label class="label">No{{k|stringformat:'02d'}} {{answer|get:k}}</label>
+                            </div>
+                            <div class="control ">
+                              <span class="select is-small">
+                                <select name="no{{k|stringformat:'02d'}}" class=" control" id="id_no{{k|stringformat:'02d'}}" {% if exam.is_ended %}disabled{% endif %}>
+                                  <option value="-" {% if answer|get:k == '-' %}selected{% endif %}>-</option>
+                                  <option value="A" {% if answer|get:k == 'A' %}selected{% endif %}>A</option>
+                                  <option value="B" {% if answer|get:k == 'B' %}selected{% endif %}>B</option>
+                                  <option value="C" {% if answer|get:k == 'C' %}selected{% endif %}>C</option>
+                                  <option value="D" {% if answer|get:k == 'D' %}selected{% endif %}>D</option>
+                                  <option value="E" {% if answer|get:k == 'E' %}selected{% endif %}>E</option>
+                                </select>
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        {% endif %}
+                        {% endwith %}
+                        {% endwith %}
+                      {% endfor %}
+                    </tr>
+                    {% endwith %}
+                  {% endfor %}
+                </table>
+
+                {% if not exam.is_ended %}
+                <div class="field">
+                  <button type="submit" class="button is-primary">Save</button>
+                </div>  
+                {% endif %}
+              </form>
+            {% else %}
+              Pengumpulan jawaban belum tersedia
+            {% endif %}
+          </div>
+          <div class="tab-content-item is-hidden has-text-centered" data-content="4">
+            {% if exam.is_ended %}
+              {% if exam.score_in_percentage %}
+              <table class="table is-bordered center">
+                <thead>
+                  <th>Rank</th>
+                  <th>Nama</th>
+                  <th>Sekolah</th>
+                  <th>Nilai</th>
+                </thead>
+                <tbody>
+                  {% for member in ranking %}
+                  <tr>
+                    <td>{{member.0}}</td>
+                    <td>{{member.1}}</td>
+                    <td>{{member.2}}</td>
+                    <td>{{member.3}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              {% else %}
+              Hubungi admin/panitia untuk pengumuman hasil. 
+              {% endif %}
+            {% else %}
+            Hasil belum tersedia
+            {% endif %}
+          </div>
+        </div>
+        <p hidden>{{answer}}</p>
+        <p hidden>{{request.user.id}}</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block css %}
+{% endblock css %} 
+
+{% block js %}
+<script async type="text/javascript" src="{% static 'core/js/timer.js' %}"></script>
+<script>
+  //29 April 2021 9:56:00 GMT+01:00
+  var endTime = new Date("{{exam.end_time|date:'Y-m-d H:i'}}");
+  setInterval(function() { makeTimer(endTime); }, 1000);
+</script>
+{% endblock js %}

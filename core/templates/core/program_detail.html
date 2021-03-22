@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %} Program Detail {% endblock title %}
+
+{% block content %}
+<section class="container">
+  <div class="columns">
+    <div class="column is-half is-offset-one-quarter">
+      <div class="box">
+        <h1 class="title is-size-5">{{program.name}}</h1>
+        <table class="table is-bordered">
+          <tr>
+            <td>Jadwal Pendaftaran</td>
+            <td>{{program.open_registration_time|date:"d F Y"}} s/d {{program.close_registration_time|date:"d F Y"}}</td>
+          </tr>
+          <tr>
+            <td>Harga</td>
+            <td>Rp. {{program.price|intcomma}}</td>
+          </tr>
+        </table>
+        
+        {% if program.status == 'registered' %}
+        <button class="button is-success" title="Disabled button" disabled>Sudah Terdaftar</button>
+        {% elif program.status == 'pending' %}
+        <button class="button is-warning" title="Disabled button" disabled>Menunggu Persetujuan</button>
+        {% elif program.is_closed %}
+        <button class="button is-danger" title="Disabled button" disabled>Pendaftaran Ditutup</button>
+        {% else %}
+        <a href="{% url 'program-register' program.id %}" class="button is-primary">Daftar</a>
+        {% endif %}
+        <hr>
+        <nav class="panel is-link">
+          <a href="{% url 'topic-list' program.id %}" class="panel-block">
+            <span class="panel-icon">
+              <i class="fas fa-comments" aria-hidden="true"></i>
+            </span>
+            Forum
+          </a>
+          {% for exam in program.exam_set.all %}
+          <a href="{% url 'exam-detail' program.id exam.id %}" class="panel-block">
+            <span class="panel-icon">
+              <i class="fas fa-book" aria-hidden="true"></i>
+            </span>
+            {{exam.name}}
+          </a>
+          {% endfor %}
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

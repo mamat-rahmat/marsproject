@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bulma_tags %}
+{% load mathfilters %}
+{% load coretags %}
+
+{% block title %} Exam Problem {% endblock title %}
+
+{% block content %}
+<section class="container">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <nav class="panel">
+        <a class="panel-block is-active" href="{% url 'topic-list' program.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-comments" aria-hidden="true"></i>
+          </span>
+          Forum
+        </a>   
+        {% for currexam in program.exam_set.all %}
+        <a class="panel-block" href="{% url 'exam-detail' program.id currexam.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-book" aria-hidden="true"></i>
+          </span>
+          {{currexam.name}}
+        </a>
+        {% endfor %}
+      </nav>
+    </div>
+    <div class="column">
+      <div class="box">
+        <h1 class="title">Forum {{program.name}}</h1>
+        <section class="container">
+            <div class="columns">
+                <div class="column">
+                    <div class="box">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            {{ form|bulma }}
+                            <div class="field">
+                                <button type="submit" class="button is-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+

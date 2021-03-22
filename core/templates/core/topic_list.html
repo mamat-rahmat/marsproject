@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bulma_tags %}
+{% load mathfilters %}
+{% load coretags %}
+
+{% block title %} Exam Problem {% endblock title %}
+
+{% block content %}
+<section class="container">
+  <div class="columns">
+    <div class="column is-one-quarter">
+      <nav class="panel">
+        <a class="panel-block is-active" href="{% url 'topic-list' program.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-comments" aria-hidden="true"></i>
+          </span>
+          Forum
+        </a>   
+        {% for currexam in program.exam_set.all %}
+        <a class="panel-block" href="{% url 'exam-detail' program.id currexam.id %}">
+          <span class="panel-icon">
+            <i class="fas fa-book" aria-hidden="true"></i>
+          </span>
+          {{currexam.name}}
+        </a>
+        {% endfor %}
+      </nav>
+    </div>
+    <div class="column">
+      <div class="box">
+        <h1 class="title">Forum {{program.name}}</h1>
+        <a href="{% url 'topic-create' program.id %}" class="button is-primary mb-2">Create Topic</a>
+        <table class="table is-bordered is-fullwidth">
+          <thead>
+            <tr>
+              <td>Topic</td>
+              <td>Posts</td>
+            </tr>
+          </thead>
+          {% for topic in object_list %}
+            <tr>
+              <td><a href="{% url 'topic-detail' program.id topic.id %}">{{topic.title}}</a><br><i class="fas fa-user" aria-hidden="true"></i> {{topic.author}}</td>
+              <td>{{topic.post_set.count}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

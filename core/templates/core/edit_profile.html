@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bulma_tags %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="columns">
+        <div class="column is-half is-offset-one-quarter">
+            <div class="box">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {{ form|bulma }}
+                    <div class="field">
+                        <button type="submit" class="button is-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

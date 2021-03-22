@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Index {% endblock title %}
+
+{% block content %}
+<section>
+  <div class="columns is-vcentered">
+    <div class="column">
+      <h1 class="title is-1 has-text-centered">
+        Madrasah Aliyah Ar-Rahmat<br>
+        Student Competition
+      </h1>
+      <h2 class="subtitle has-text-centered">
+        MA Unggulan Ar-Rahmat & LPP Salman ITB
+      </h2>
+      <div class="buttons is-centered">
+        <a href="/accounts/login" class="button is-link is-medium">Login</a>
+        <a href="{% url 'program-list' %}" class="button is-primary is-medium">Program</a>
+        <a href="/pages/info/" class="button is-primary is-medium">Info</a>
+        <a href="/pages/panduan/" class="button is-primary is-medium">Panduan</a>
+      </div>
+      <section class="info-tiles">
+          <div class="tile is-ancestor has-text-centered">
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{siswa_count}}</p>
+                      <p class="subtitle">Siswa</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{guru_count}}</p>
+                      <p class="subtitle">Guru</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{sekolah_count}}</p>
+                      <p class="subtitle">Sekolah</p>
+                  </article>
+              </div>
+              <div class="tile is-parent">
+                  <article class="tile is-child box">
+                      <p class="title">{{program_count}}</p>
+                      <p class="subtitle">Program</p>
+                  </article>
+              </div>
+          </div>
+      </section>
+    </div>
+    <div class="column">
+      <figure class="image" style="padding: 50px">  
+        <img src="{% static 'core/img/mars.jpeg' %}">
+      </figure>
+    </div>
+  </div>
+</section>
+{% endblock content %}
