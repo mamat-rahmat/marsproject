@@ -100,11 +100,21 @@
           <div class="tab-content-item {% if not saved %}is-hidden{% endif %} has-text-centered" data-content="3">
             
             {% if exam.is_started %}
-              {% if saved %}
-                <div class="notification is-success">
-                  Jawaban berhasil diperbaharui
+              {% if completed %}
+                <div class="notification is-success is-size-5 ">
+                  Tes berhasil diakhiri
+                  <br>
+                  Terima kasih telah mengerjakan
+                  <br>
+                </div>
+              {% elif saved %}
+                <div class="notification is-success is-size-5 ">
+                  Jawaban berhasil disimpan
+                  <br>
+                  Anda masih dapat mengubah jawaban
                 </div>
               {% endif %}
+
               {% if exam.is_ended %}
                 <div class="notification is-danger">
                   Pengumpulan jawaban ditutup
@@ -143,7 +153,7 @@
                             </div>
                             <div class="control ">
                               <span class="select is-small">
-                                <select name="no{{k|stringformat:'02d'}}" class=" control" id="id_no{{k|stringformat:'02d'}}" {% if exam.is_ended %}disabled{% endif %}>
+                                <select name="no{{k|stringformat:'02d'}}" class=" control" id="id_no{{k|stringformat:'02d'}}" {% if exam.is_ended or completed %}disabled{% endif %}>
                                   <option value="-" {% if answer|get:k == '-' %}selected{% endif %}>-</option>
                                   <option value="A" {% if answer|get:k == 'A' %}selected{% endif %}>A</option>
                                   <option value="B" {% if answer|get:k == 'B' %}selected{% endif %}>B</option>
@@ -166,7 +176,8 @@
 
                 {% if not exam.is_ended %}
                 <div class="field">
-                  <button type="submit" class="button is-primary">Save</button>
+                  <button type="submit" class="button is-primary" name="action" value="Save">Simpan</button>
+                  <button type="submit" class="button is-success" name="action" value="Complete">Akhiri</button>
                 </div>  
                 {% endif %}
               </form>
@@ -203,8 +214,6 @@
             {% endif %}
           </div>
         </div>
-        <p hidden>{{answer}}</p>
-        <p hidden>{{request.user.id}}</p>
       </div>
     </div>
   </div>

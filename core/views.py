@@ -95,6 +95,7 @@ def exam_detail(request, pk_program, pk_exam):
         return HttpResponse('Unauthorized Access', status=401)
 
     saved = False
+    completed = False
     myanswer, created = Answer.objects.get_or_create(user=request.user,
                                                      exam=exam)
     myanskey = exam.problemset
@@ -105,6 +106,8 @@ def exam_detail(request, pk_program, pk_exam):
         myanswer.save()
         myanswer.grade()
         saved = True
+        if (request.POST.get('action') == 'Complete'):
+            completed = True
 
     ranking = []
     if exam.is_ended:
@@ -133,7 +136,8 @@ def exam_detail(request, pk_program, pk_exam):
         'anskey': model_to_dict(myanskey),
         'sidebar': True,
         'ranking': ranking,
-        'saved': saved
+        'saved': saved,
+        'completed': completed,
     }
     return render(request, 'core/exam_detail.html', context)
 
