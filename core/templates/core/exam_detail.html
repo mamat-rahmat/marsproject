@@ -174,7 +174,7 @@
                   {% endfor %}
                 </table>
 
-                {% if not exam.is_ended %}
+                {% if not exam.is_ended and not completed %}
                 <div class="field">
                   <button type="submit" class="button is-primary" name="action" value="Save">Simpan</button>
                   <button type="submit" class="button is-success" name="action" value="Complete">Akhiri</button>

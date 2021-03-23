@@ -244,6 +244,10 @@ class Answer(models.Model):
     no48 = models.CharField(max_length=1, choices=ANSWER_CHOICES, default='-')
     no49 = models.CharField(max_length=1, choices=ANSWER_CHOICES, default='-')
     no50 = models.CharField(max_length=1, choices=ANSWER_CHOICES, default='-')
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
     class Meta:
         unique_together = (('user', 'exam'),)

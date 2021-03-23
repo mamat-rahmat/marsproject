@@ -70,7 +70,7 @@ class ProgramAdmin(admin.ModelAdmin):
             members_siswa = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
             members_guru = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='GURU')
             
-            header = ['Role', 'Nama', 'No WA', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total']
+            header = ['Role', 'Nama', 'No WA', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total Nilai']
             body = []
             for member in members_siswa:
                 user = member.user

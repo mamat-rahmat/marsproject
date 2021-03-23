@@ -95,19 +95,20 @@ def exam_detail(request, pk_program, pk_exam):
         return HttpResponse('Unauthorized Access', status=401)
 
     saved = False
-    completed = False
     myanswer, created = Answer.objects.get_or_create(user=request.user,
                                                      exam=exam)
+    completed = myanswer.completed
     myanskey = exam.problemset
     if request.method == "POST":
         for i in range(1, 51):
             num = f"no{i:02}"
             setattr(myanswer, num, request.POST.get(f"no{i:02}", '-'))
-        myanswer.save()
-        myanswer.grade()
         saved = True
         if (request.POST.get('action') == 'Complete'):
             completed = True
+            myanswer.completed = True
+        myanswer.save()
+        myanswer.grade()
 
     ranking = []
     if exam.is_ended:
