@@ -135,6 +135,7 @@ def exam_detail(request, pk_program, pk_exam):
         'exam': exam,
         'answer': model_to_dict(myanswer),
         'anskey': model_to_dict(myanskey),
+        'myanswer': myanswer,
         'sidebar': True,
         'ranking': ranking,
         'saved': saved,
