@@ -13,6 +13,7 @@ getprogram = {
     'matematika-smp': Program.objects.get(bidang='matematika-smp', name__startswith='MARS'),
     'ipa-smp': Program.objects.get(bidang='ipa-smp', name__startswith='MARS'),
     'ips-smp': Program.objects.get(bidang='ips-smp', name__startswith='MARS'),
+    'Testing': Program.objects.get(name__startswith='Testing')
 }
 
 
@@ -20,7 +21,7 @@ filename = '23mar.xlsx'
 wb = load_workbook(filename)
 ws = wb.active
 for row in list(ws)[1:]:
-    rownum = row[0].row    
+    rownum = row[0].row
     nama = row[1].value
     sekolah = row[2].value
     bidang = getbidang[row[3].value]
@@ -49,6 +50,11 @@ for row in list(ws)[1:]:
     membership = Membership.objects.create(
         user = user,
         program = getprogram[bidang],
+        paid = True
+    )
+    membership = Membership.objects.create(
+        user = user,
+        program = getprogram['Testing'],
         paid = True
     )
 
