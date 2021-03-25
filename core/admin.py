@@ -1,3 +1,4 @@
+from datetime import timedelta
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from django.http import HttpResponse
@@ -69,32 +70,37 @@ class ProgramAdmin(admin.ModelAdmin):
             exams = program.exam_set.all()
             members_siswa = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='SISWA')
             members_guru = Membership.objects.select_related('user__userprofile').filter(program=program, user__userprofile__role='GURU')
-            
-            header = ['Role', 'Nama', 'No WA', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total Nilai']
+            header = ['Role', 'Nama', 'Sekolah', 'Bidang', *[exam.name for exam in exams], 'Total Nilai', 'Total Waktu']
             body = []
             for member in members_siswa:
                 user = member.user
                 userprofile = user.userprofile
-                row = ['SISWA', userprofile.nama_lengkap, userprofile.nomor_whatsapp, userprofile.sekolah, userprofile.get_bidang_display()]
-                total = 0;
+                row = ['SISWA', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                total = 0
+                waktu = timedelta()
                 for exam in exams:
                     answer, created = Answer.objects.get_or_create(user=user, exam=exam)
                     row.append(answer.score)
                     total += answer.score
+                    waktu += answer.updated_at - exam.start_time
                 row.append(total)
+                row.append(waktu)
                 body.append(row)
             for member in members_guru:
                 userprofile = member.user.userprofile
-                row = ['GURU', userprofile.nama_lengkap, userprofile.nomor_whatsapp, userprofile.sekolah, userprofile.get_bidang_display()]
-                total = 0;
+                row = ['GURU', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
+                total = 0
+                waktu = timedelta()
                 for exam in exams:
                     answer, created = Answer.objects.get_or_create(user=user, exam=exam)
                     row.append(answer.score)
                     total += answer.score
+                    waktu += answer.updated_at - exam.start_time
                 row.append(total)
+                row.append(waktu)
                 body.append(row)
-            body.sort(key=lambda x: (x[0],x[-1]), reverse=True)
-            
+            body.sort(key=lambda x: (x[0],x[-2],-x[-1]), reverse=True)
+
             ws = wb.create_sheet()
             ws.append([program.name])
             ws.append(header)
