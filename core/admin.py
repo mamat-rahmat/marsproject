@@ -86,19 +86,6 @@ class ProgramAdmin(admin.ModelAdmin):
                 row.append(total)
                 row.append(waktu)
                 body.append(row)
-            for member in members_guru:
-                userprofile = member.user.userprofile
-                row = ['GURU', userprofile.nama_lengkap, userprofile.sekolah, userprofile.get_bidang_display()]
-                total = 0
-                waktu = timedelta()
-                for exam in exams:
-                    answer, created = Answer.objects.get_or_create(user=user, exam=exam)
-                    row.append(answer.score)
-                    total += answer.score
-                    waktu += answer.updated_at - exam.start_time
-                row.append(total)
-                row.append(waktu)
-                body.append(row)
             body.sort(key=lambda x: (x[0],x[-2],-x[-1]), reverse=True)
 
             ws = wb.create_sheet()
